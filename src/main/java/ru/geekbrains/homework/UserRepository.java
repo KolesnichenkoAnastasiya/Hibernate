@@ -1,4 +1,4 @@
-package ru.titov.homework;
+package ru.geekbrains.homework;
 
 public class UserRepository {
 
