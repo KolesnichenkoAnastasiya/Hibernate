@@ -3,70 +3,47 @@ package ru.geekbrains;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.hibernate.cfg.Configuration;
-import ru.geekbrains.model.User;
+import ru.geekbrains.homework.CustomerDao;
+import ru.geekbrains.homework.ProductDao;
+import ru.geekbrains.model.Customer;
+import ru.geekbrains.model.Product;
+import ru.geekbrains.model.Purchase_history;
 
 public class Main {
 public static void main(String[] args) {
         EntityManagerFactory entityManagerFactory = new Configuration()
-        .configure("hibernate.cfg.xml")
-        .buildSessionFactory();
+                .configure("hibernate.cfg.xml")
+                .buildSessionFactory();
 
         EntityManager entityManager = entityManagerFactory.createEntityManager();
 
-        // INSERT
-        entityManager.getTransaction().begin();
-
-        entityManager.persist(new User("User1", "1@a.com", "pass1"));
-        entityManager.persist(new User("User2", "2@a.com", "pass2"));
-        entityManager.persist(new User("User3", "3@a.com", "pass3"));
-        entityManager.persist(new User("User4", "2@a.com", "pass4"));
-        entityManager.persist(new User("User5", "3@a.com", "pass5"));
-
-        entityManager.getTransaction().commit();
-
-        // SELECT
-//        User user = entityManager.find(User.class, 1L);
-
-        // JPQL, HQL
-//        List<User> users = entityManager.createQuery("select u from User u where u.id in (1, 2)", User.class)
-//                .getResultList();
+//        final ProductDao productDao= new ProductDao(entityManagerFactory);
 //
-//        for (User userFromDb : users) {
-//            System.out.println(userFromDb);
-//        }
-
-        // UPDATE
+//        final CustomerDao customerDao= new CustomerDao(entityManagerFactory);
+//
+//        productDao.init();
+//
+//        customerDao.init();
+//
+//        Purchase_history purchase_history1 = new Purchase_history(new Product("prod", 85),
+//                85, new Customer("name", "surname"));
+//
+//        Purchase_history purchase_history2 = new Purchase_history(new Product("prod22", 50000),
+//                10, new Customer("name888888888", "surname9999"));
+//
 //        entityManager.getTransaction().begin();
 //
-//        User user = entityManager.find(User.class, 1L);
-//        user.setUsername("new Username");
+//        entityManager.persist(purchase_history1);
 //
 //        entityManager.getTransaction().commit();
-
+//
 //        entityManager.getTransaction().begin();
 //
-//        User user = new User("User2New", "2@a.com", "pass2");
-//        user.setId(2L);
-//        entityManager.merge(user);
 //
-//        entityManager.getTransaction().commit();
-
-        // DELETE
-//        entityManager.getTransaction().begin();
-//
-//        User user = entityManager.find(User.class, 2L);
-//        entityManager.remove(user);
-////        entityManager.createQuery("delete from User u where u.id = 3").executeUpdate();
-//
-//        entityManager.getTransaction().commit();
-
-//        Object singleResult = entityManager.createNativeQuery("""
-//                            select u.id as userId
-//                            from users u
-//                            where u.username like '%brain%'
-//                """, String.class).getSingleResult();
+//        entityManager.persist(purchase_history2);
 
         entityManager.close();
+
         entityManagerFactory.close();
-        }
-        }
+}
+}
