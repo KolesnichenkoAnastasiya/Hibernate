@@ -15,31 +15,34 @@ public static void main(String[] args) {
 
         EntityManager entityManager = entityManagerFactory.createEntityManager();
 
-//        ProductDao.init(entityManager);
-//
-//        ProductDao.findById(entityManager, 2L);
-//
-//        System.out.println(ProductDao.findById(entityManager, 2L));
-//
-//        ProductDao.findAll(entityManager);
-//
-//        ProductDao.printAllProd(entityManager);
-//
-//        ProductDao.deleteById(entityManager, 2L);
-//
-//        ProductDao.printAllProd(entityManager);
-//
+        final ProductDao productDao= new ProductDao(entityManagerFactory);
+//        productDao.init();
+
+//        productDao.findById(2L);
+
+//        System.out.println(productDao.findById(2L));
+
+//        productDao.findAll();
+
+//        System.out.println(productDao.countAllProduct());
+
+//        productDao.printAllProduct();
+
+//        productDao.deleteById(2L);
+
+//        productDao.printAllProduct();
+
 //        Product newProd500 = new Product( 500L, "save product 500", 500);
 //
-//        ProductDao.saveOrUpdate(entityManager, newProd500);
+//        productDao.saveOrUpdate(newProd500);
+
+//        productDao.printAllProduct();
 //
-//        ProductDao.printAllProd(entityManager);
+//        Product newProd1 = new Product( 1L, "save product 1", 1);
 //
-//        Product newProd1 = new Product( 1L, "update product 1", 1);
+//        productDao.saveOrUpdate(newProd1);
 //
-//        ProductDao.saveOrUpdate(entityManager, newProd1);
-//
-//        ProductDao.printAllProd(entityManager);
+//        productDao.printAllProduct();
 
         entityManager.close();
 

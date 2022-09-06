@@ -1,12 +1,22 @@
 package ru.geekbrains.homework;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import ru.geekbrains.model.Product;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class ProductDao {
-
-    public static void init(EntityManager em) {
+    private final EntityManagerFactory emFactory;
+    public ProductDao(EntityManagerFactory emFactory) {
+        this.emFactory = emFactory;
+    }
+    public void init() {
+        EntityManager em = emFactory.createEntityManager();
         em.getTransaction().begin();
         em.persist(new Product("Product 1", 1000));
         em.persist(new Product("Product 2", 2000));
@@ -15,34 +25,58 @@ public class ProductDao {
         em.persist(new Product("Product 5", 5000));
         em.getTransaction().commit();
     }
-    public static Product findById(EntityManager em, Long id){
-        Product product = em.find(Product.class, id);
-        return product;
+    public Optional<Product> findById(Long id){
+        return executeForEntityManager(entityManager ->
+                Optional.ofNullable(entityManager.find(Product.class, id)));
     }
-    public static List<Product> findAll(EntityManager em){
-        List<Product> products = em.createQuery("select p from Product p", Product.class)
-                .getResultList();
-        return products;
+    public List<Product> findAll(){
+        return executeForEntityManager(entityManager ->
+                entityManager.createNamedQuery("findAllProduct", Product.class).getResultList());
     }
-    public static void printAllProd (EntityManager em){
-        for (Product product : findAll(em)) {
+
+    public void printAllProduct(){
+        for(Product product: findAll()){
             System.out.println(product);
         }
     }
-    public static void deleteById(EntityManager em, Long id){
-        em.getTransaction().begin();
-        Product product = em.find(Product.class, id);
-        em.remove(product);
-        em.getTransaction().commit();
+    public Long countAllProduct(){
+        return executeForEntityManager(entityManager ->
+                entityManager.createNamedQuery("countAllProduct", Long.class).getSingleResult());
     }
-    public static void saveOrUpdate(EntityManager em, Product product) {
-       em.getTransaction().begin();
-       if (product.getId() == null) {
-           em.persist(product);
-       } else {
-           em.merge(product);
-       }
-       em.getTransaction().commit();
+    public void saveOrUpdate (Product product){
+        executeInTransaction(entityManager -> {
+            if(product.getId()==null){
+                entityManager.persist(product);
+            } else {
+                entityManager.merge(product);
+            }
+        });
+    }
+    public void deleteById (Long id){
+        executeInTransaction(entityManager-> entityManager.createNamedQuery("deleteProductById")
+                .setParameter("id", id)
+                .executeUpdate());
+    }
+    private  <R> R executeForEntityManager(Function<EntityManager, R> function) {
+        EntityManager em = emFactory.createEntityManager();
+        try {
+            return function.apply(em);
+        } finally {
+            em.close();
+        }
+    }
+
+    private void executeInTransaction(Consumer<EntityManager> consumer) {
+        EntityManager em = emFactory.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            consumer.accept(em);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
     }
 }
 
