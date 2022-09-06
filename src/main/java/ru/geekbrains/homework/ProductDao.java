@@ -3,20 +3,18 @@ package ru.geekbrains.homework;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import ru.geekbrains.model.Product;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class ProductDao {
-    private final EntityManagerFactory emFactory;
+    private final EntityManagerFactory emFactoryProd;
     public ProductDao(EntityManagerFactory emFactory) {
-        this.emFactory = emFactory;
+        this.emFactoryProd = emFactory;
     }
     public void init() {
-        EntityManager em = emFactory.createEntityManager();
+        EntityManager em = emFactoryProd.createEntityManager();
         em.getTransaction().begin();
         em.persist(new Product("Product 1", 1000));
         em.persist(new Product("Product 2", 2000));
@@ -33,7 +31,6 @@ public class ProductDao {
         return executeForEntityManager(entityManager ->
                 entityManager.createNamedQuery("findAllProduct", Product.class).getResultList());
     }
-
     public void printAllProduct(){
         for(Product product: findAll()){
             System.out.println(product);
@@ -45,29 +42,28 @@ public class ProductDao {
     }
     public void saveOrUpdate (Product product){
         executeInTransaction(entityManager -> {
-            if(product.getId()==null){
+            if(product.getId_product()==null){
                 entityManager.persist(product);
             } else {
                 entityManager.merge(product);
             }
         });
     }
-    public void deleteById (Long id){
+    public void deleteProductById (Long id){
         executeInTransaction(entityManager-> entityManager.createNamedQuery("deleteProductById")
-                .setParameter("id", id)
+                .setParameter("id_product", id)
                 .executeUpdate());
     }
     private  <R> R executeForEntityManager(Function<EntityManager, R> function) {
-        EntityManager em = emFactory.createEntityManager();
+        EntityManager em = emFactoryProd.createEntityManager();
         try {
             return function.apply(em);
         } finally {
             em.close();
         }
     }
-
     private void executeInTransaction(Consumer<EntityManager> consumer) {
-        EntityManager em = emFactory.createEntityManager();
+        EntityManager em = emFactoryProd.createEntityManager();
         try {
             em.getTransaction().begin();
             consumer.accept(em);
